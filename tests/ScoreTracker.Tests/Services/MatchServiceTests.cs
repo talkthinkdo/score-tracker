@@ -15,6 +15,31 @@ public class MatchServiceTests
     private MatchService CreateService() => new(_matchRepo.Object, _goalRepo.Object);
 
     [Fact]
+    public async Task GetAllMatchesAsync_ReturnsAllMatches()
+    {
+        var matches = new List<Match>
+        {
+            new() { Id = 1, HomeTeamId = 1, AwayTeamId = 2 },
+            new() { Id = 2, HomeTeamId = 3, AwayTeamId = 4 },
+        };
+        _matchRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(matches);
+
+        var result = await CreateService().GetAllMatchesAsync();
+
+        result.Should().BeEquivalentTo(matches);
+    }
+
+    [Fact]
+    public async Task GetAllMatchesAsync_ReturnsEmpty_WhenNoMatches()
+    {
+        _matchRepo.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+
+        var result = await CreateService().GetAllMatchesAsync();
+
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task GetMatchAsync_ReturnsNull_WhenNotFound()
     {
         _matchRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((Match?)null);

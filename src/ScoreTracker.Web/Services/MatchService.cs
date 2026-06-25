@@ -6,6 +6,9 @@ namespace ScoreTracker.Web.Services;
 
 public class MatchService(IMatchRepository matchRepository, IGoalRepository goalRepository) : IMatchService
 {
+    public async Task<IEnumerable<Match>> GetAllMatchesAsync()
+        => await matchRepository.GetAllAsync();
+
     public async Task<Match?> GetMatchAsync(int id)
         => await matchRepository.GetByIdAsync(id);
 

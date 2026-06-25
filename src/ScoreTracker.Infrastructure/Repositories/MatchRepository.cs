@@ -7,6 +7,14 @@ namespace ScoreTracker.Infrastructure.Repositories;
 
 public class MatchRepository(AppDbContext context) : IMatchRepository
 {
+    public async Task<IEnumerable<Match>> GetAllAsync()
+        => await context.Matches
+            .Include(m => m.HomeTeam)
+            .Include(m => m.AwayTeam)
+            .Include(m => m.Group)
+            .OrderBy(m => m.KickOff)
+            .ToListAsync();
+
     public async Task<Match?> GetByIdAsync(int id)
         => await context.Matches
             .Include(m => m.HomeTeam)

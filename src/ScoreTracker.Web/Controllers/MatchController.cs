@@ -7,6 +7,12 @@ namespace ScoreTracker.Web.Controllers;
 
 public class MatchController(IMatchService matchService) : Controller
 {
+    public async Task<IActionResult> Index()
+    {
+        var matches = await matchService.GetAllMatchesAsync();
+        return View(matches);
+    }
+
     public async Task<IActionResult> Detail(int id)
     {
         var match = await matchService.GetMatchWithGoalsAsync(id);

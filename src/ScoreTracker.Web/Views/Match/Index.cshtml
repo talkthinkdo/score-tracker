@@ -1,0 +1,52 @@
+@model IEnumerable<ScoreTracker.Core.Models.Match>
+@using ScoreTracker.Core.Models
+@{
+    ViewData["Title"] = "All Matches";
+}
+
+<h2 class="fw-bold mb-4" style="color:#e8b84b;">All Matches</h2>
+
+@foreach (var group in Model.GroupBy(m => m.Group.Name).OrderBy(g => g.Key))
+{
+    <h5 class="mt-4 mb-2" style="color:#94a3b8;">Group @group.Key</h5>
+    @foreach (var m in group)
+    {
+        <div class="match-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-end" style="width:38%;">
+                    <span class="fw-bold">@m.HomeTeam.Name</span>
+                </div>
+                <div class="text-center" style="width:24%;">
+                    @if (m.Status == MatchStatus.Completed)
+                    {
+                        <a asp-controller="Match" asp-action="Detail" asp-route-id="@m.Id">
+                            <span class="score-badge">@m.HomeScore &ndash; @m.AwayScore</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">@m.KickOff.ToString("d MMM HH:mm")</span>
+                    }
+                </div>
+                <div style="width:38%;">
+                    <span class="fw-bold">@m.AwayTeam.Name</span>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+                <small class="text-muted">@m.Venue</small>
+                <div>
+                    @if (m.Status == MatchStatus.Completed)
+                    {
+                        <span class="status-completed me-2">&#10003; Full Time</span>
+                    }
+                    else
+                    {
+                        <span class="status-scheduled me-2">Scheduled</span>
+                    }
+                    <a asp-controller="Match" asp-action="Edit" asp-route-id="@m.Id"
+                       class="btn btn-sm btn-primary" style="font-size:0.75rem;padding:1px 8px;">Edit</a>
+                </div>
+            </div>
+        </div>
+    }
+}
