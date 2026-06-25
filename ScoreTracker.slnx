@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ScoreTracker.Core/ScoreTracker.Core.csproj" />
+    <Project Path="src/ScoreTracker.Infrastructure/ScoreTracker.Infrastructure.csproj" />
+    <Project Path="src/ScoreTracker.Web/ScoreTracker.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ScoreTracker.Tests/ScoreTracker.Tests.csproj" />
+  </Folder>
+</Solution>

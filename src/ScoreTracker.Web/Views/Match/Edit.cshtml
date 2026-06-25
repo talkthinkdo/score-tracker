@@ -1,0 +1,170 @@
+@model ScoreTracker.Web.ViewModels.EditMatchViewModel
+@{
+    ViewData["Title"] = $"Edit: {Model.HomeTeamName} vs {Model.AwayTeamName}";
+}
+
+<div class="mb-3">
+    <a asp-controller="Match" asp-action="Detail" asp-route-id="@Model.MatchId" class="btn btn-outline-secondary btn-sm">
+        &larr; Back to Match
+    </a>
+</div>
+
+<h3 class="fw-bold mb-4" style="color:#c9a227;">
+    @Model.HomeTeamName vs @Model.AwayTeamName
+</h3>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="MatchId" />
+    <input type="hidden" asp-for="HomeTeamName" />
+    <input type="hidden" asp-for="AwayTeamName" />
+    <input type="hidden" asp-for="HomeTeamId" />
+    <input type="hidden" asp-for="AwayTeamId" />
+
+    <div class="card mb-4">
+        <div class="card-header fw-bold">Score</div>
+        <div class="card-body">
+            <div class="row align-items-center g-3">
+                <div class="col-5 text-end">
+                    <label class="fw-bold fs-5">@Model.HomeTeamName</label>
+                </div>
+                <div class="col-1 text-center">
+                    <input asp-for="HomeScore" class="form-control text-center fw-bold fs-4" style="width:70px;margin:auto;" min="0" max="99" type="number" />
+                    <span asp-validation-for="HomeScore" class="text-danger small"></span>
+                </div>
+                <div class="col-1 text-center fw-bold fs-4 text-muted">&ndash;</div>
+                <div class="col-1 text-center">
+                    <input asp-for="AwayScore" class="form-control text-center fw-bold fs-4" style="width:70px;margin:auto;" min="0" max="99" type="number" />
+                    <span asp-validation-for="AwayScore" class="text-danger small"></span>
+                </div>
+                <div class="col-4">
+                    <label class="fw-bold fs-5">@Model.AwayTeamName</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header fw-bold">Goal Scorers</div>
+        <div class="card-body">
+            <div id="goals-container">
+                @for (int i = 0; i < Model.Goals.Count; i++)
+                {
+                    <div class="goal-row row g-2 align-items-center mb-2">
+                        <input type="hidden" name="Goals[@i].TeamId" value="@Model.Goals[i].TeamId" />
+                        <div class="col-12 col-md-4">
+                            <select name="Goals[@i].TeamId" class="form-select">
+                                <option value="@Model.HomeTeamId" selected="@(Model.Goals[i].TeamId == Model.HomeTeamId)">@Model.HomeTeamName</option>
+                                <option value="@Model.AwayTeamId" selected="@(Model.Goals[i].TeamId == Model.AwayTeamId)">@Model.AwayTeamName</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <input name="Goals[@i].ScorerName" value="@Model.Goals[i].ScorerName"
+                                   class="form-control" placeholder="Scorer name" required />
+                        </div>
+                        <div class="col-4 col-md-1">
+                            <input name="Goals[@i].Minute" value="@Model.Goals[i].Minute"
+                                   class="form-control text-center" placeholder="Min" type="number" min="1" max="120" required />
+                        </div>
+                        <div class="col-4 col-md-1 text-center">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="Goals[@i].IsOwnGoal" value="true"
+                                       @(Model.Goals[i].IsOwnGoal ? "checked" : "") id="og_@i" />
+                                <label class="form-check-label text-danger" for="og_@i">OG</label>
+                            </div>
+                        </div>
+                        <div class="col-4 col-md-1 text-center">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="Goals[@i].IsPenalty" value="true"
+                                       @(Model.Goals[i].IsPenalty ? "checked" : "") id="pen_@i" />
+                                <label class="form-check-label text-warning" for="pen_@i">Pen</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-1 text-end">
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-goal">&#215;</button>
+                        </div>
+                    </div>
+                }
+            </div>
+            <button type="button" id="add-goal" class="btn btn-outline-secondary btn-sm mt-2">+ Add Goal</button>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4">Save Result</button>
+        <a asp-controller="Match" asp-action="Detail" asp-route-id="@Model.MatchId" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+(function () {
+    var homeId = @Model.HomeTeamId;
+    var awayId = @Model.AwayTeamId;
+    var homeName = '@Html.Raw(Model.HomeTeamName)';
+    var awayName = '@Html.Raw(Model.AwayTeamName)';
+
+    function goalIndex() {
+        return document.querySelectorAll('#goals-container .goal-row').length;
+    }
+
+    document.getElementById('add-goal').addEventListener('click', function () {
+        var idx = goalIndex();
+        var row = document.createElement('div');
+        row.className = 'goal-row row g-2 align-items-center mb-2';
+        row.innerHTML =
+            '<div class="col-12 col-md-4">' +
+                '<select name="Goals[' + idx + '].TeamId" class="form-select">' +
+                    '<option value="' + homeId + '">' + homeName + '</option>' +
+                    '<option value="' + awayId + '">' + awayName + '</option>' +
+                '</select>' +
+            '</div>' +
+            '<div class="col-12 col-md-4">' +
+                '<input name="Goals[' + idx + '].ScorerName" class="form-control" placeholder="Scorer name" required />' +
+            '</div>' +
+            '<div class="col-4 col-md-1">' +
+                '<input name="Goals[' + idx + '].Minute" class="form-control text-center" placeholder="Min" type="number" min="1" max="120" required />' +
+            '</div>' +
+            '<div class="col-4 col-md-1 text-center">' +
+                '<div class="form-check form-check-inline">' +
+                    '<input class="form-check-input" type="checkbox" name="Goals[' + idx + '].IsOwnGoal" value="true" id="og_' + idx + '" />' +
+                    '<label class="form-check-label text-danger" for="og_' + idx + '">OG</label>' +
+                '</div>' +
+            '</div>' +
+            '<div class="col-4 col-md-1 text-center">' +
+                '<div class="form-check form-check-inline">' +
+                    '<input class="form-check-input" type="checkbox" name="Goals[' + idx + '].IsPenalty" value="true" id="pen_' + idx + '" />' +
+                    '<label class="form-check-label text-warning" for="pen_' + idx + '">Pen</label>' +
+                '</div>' +
+            '</div>' +
+            '<div class="col-12 col-md-1 text-end">' +
+                '<button type="button" class="btn btn-sm btn-outline-danger remove-goal">&#215;</button>' +
+            '</div>';
+        document.getElementById('goals-container').appendChild(row);
+        attachRemove(row.querySelector('.remove-goal'));
+    });
+
+    function attachRemove(btn) {
+        btn.addEventListener('click', function () {
+            btn.closest('.goal-row').remove();
+            reindex();
+        });
+    }
+
+    function reindex() {
+        document.querySelectorAll('#goals-container .goal-row').forEach(function (row, i) {
+            row.querySelectorAll('[name]').forEach(function (el) {
+                el.name = el.name.replace(/Goals\[\d+\]/, 'Goals[' + i + ']');
+            });
+            row.querySelectorAll('[id]').forEach(function (el) {
+                el.id = el.id.replace(/_\d+$/, '_' + i);
+            });
+            row.querySelectorAll('[for]').forEach(function (el) {
+                el.htmlFor = el.htmlFor.replace(/_\d+$/, '_' + i);
+            });
+        });
+    }
+
+    document.querySelectorAll('.remove-goal').forEach(attachRemove);
+})();
+</script>
+}
