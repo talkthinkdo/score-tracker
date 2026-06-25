@@ -24,14 +24,14 @@
             <div class="col-4">
                 @if (m.Status == MatchStatus.Completed)
                 {
-                    <div style="font-size:3rem;font-weight:900;color:#c9a227;">
+                    <div style="font-size:3rem;font-weight:900;color:#e8b84b;">
                         @m.HomeScore &ndash; @m.AwayScore
                     </div>
                     <div class="status-completed mt-1">Full Time</div>
                 }
                 else
                 {
-                    <div style="font-size:1.5rem;color:#8bb4cc;">vs</div>
+                    <div style="font-size:1.5rem;color:#94a3b8;">vs</div>
                     <div class="status-scheduled mt-1">Scheduled</div>
                 }
             </div>
@@ -49,7 +49,7 @@
         <div class="card-header fw-bold">Goal Scorers</div>
         <div class="card-body">
             <div class="row">
-                <div class="col-6 border-end" style="border-color:#1e3a5f!important;">
+                <div class="col-6 border-end" style="border-color:#243650!important;">
                     <p class="fw-bold mb-2">@m.HomeTeam.Name</p>
                     @if (Model.HomeGoals.Any())
                     {
