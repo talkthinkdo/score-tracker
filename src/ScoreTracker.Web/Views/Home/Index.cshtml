@@ -1,0 +1,70 @@
+@model ScoreTracker.Web.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Group Stage";
+}
+
+<div class="mb-4">
+    <h1 class="display-5 fw-bold" style="color:#c9a227;">2026 FIFA World Cup</h1>
+    <p class="text-muted">Canada &bull; Mexico &bull; USA &mdash; Group Stage</p>
+</div>
+
+<div class="row g-4">
+@foreach (var gs in Model.Groups)
+{
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <span class="group-badge me-2">Group @gs.Group.Name</span>
+                </span>
+                <a asp-controller="Group" asp-action="Detail" asp-route-id="@gs.Group.Id"
+                   class="btn btn-sm btn-primary">Full Group</a>
+            </div>
+            <div class="card-body p-2">
+                <table class="table table-dark table-sm standings-table mb-2">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th class="text-center">P</th>
+                            <th class="text-center">W</th>
+                            <th class="text-center">D</th>
+                            <th class="text-center">L</th>
+                            <th class="text-center">GD</th>
+                            <th class="text-center">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var s in gs.Standings)
+                    {
+                        <tr>
+                            <td>@s.Team.FifaCode</td>
+                            <td class="text-center">@s.Played</td>
+                            <td class="text-center">@s.Won</td>
+                            <td class="text-center">@s.Drawn</td>
+                            <td class="text-center">@s.Lost</td>
+                            <td class="text-center">@(s.GoalDifference > 0 ? "+" : "")@s.GoalDifference</td>
+                            <td class="text-center fw-bold">@s.Points</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+
+                @if (gs.RecentMatches.Any())
+                {
+                    <p class="mb-1" style="font-size:0.75rem;color:#8bb4cc;text-transform:uppercase;letter-spacing:0.05em;">Recent Results</p>
+                    @foreach (var m in gs.RecentMatches)
+                    {
+                        <div class="match-card d-flex justify-content-between align-items-center">
+                            <small>@m.HomeTeam.FifaCode</small>
+                            <a asp-controller="Match" asp-action="Detail" asp-route-id="@m.Id">
+                                <span class="score-badge">@m.HomeScore &ndash; @m.AwayScore</span>
+                            </a>
+                            <small>@m.AwayTeam.FifaCode</small>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
+</div>

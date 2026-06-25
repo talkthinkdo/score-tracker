@@ -1,0 +1,97 @@
+@model ScoreTracker.Web.ViewModels.MatchViewModel
+@using ScoreTracker.Core.Models
+@{
+    ViewData["Title"] = $"{Model.Match.HomeTeam.Name} vs {Model.Match.AwayTeam.Name}";
+    var m = Model.Match;
+}
+
+<div class="mb-3">
+    <a asp-controller="Group" asp-action="Detail" asp-route-id="@m.GroupId" class="btn btn-outline-secondary btn-sm">
+        &larr; Group @m.Group.Name
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <small class="text-muted">Group @m.Group.Name &bull; @m.Venue &bull; @m.KickOff.ToString("dddd d MMMM yyyy, HH:mm")</small>
+    </div>
+    <div class="card-body py-4">
+        <div class="row align-items-center text-center">
+            <div class="col-4">
+                <h2 class="fw-bold">@m.HomeTeam.Name</h2>
+                <div class="text-muted">@m.HomeTeam.FifaCode</div>
+            </div>
+            <div class="col-4">
+                @if (m.Status == MatchStatus.Completed)
+                {
+                    <div style="font-size:3rem;font-weight:900;color:#c9a227;">
+                        @m.HomeScore &ndash; @m.AwayScore
+                    </div>
+                    <div class="status-completed mt-1">Full Time</div>
+                }
+                else
+                {
+                    <div style="font-size:1.5rem;color:#8bb4cc;">vs</div>
+                    <div class="status-scheduled mt-1">Scheduled</div>
+                }
+            </div>
+            <div class="col-4">
+                <h2 class="fw-bold">@m.AwayTeam.Name</h2>
+                <div class="text-muted">@m.AwayTeam.FifaCode</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (m.Status == MatchStatus.Completed && (Model.HomeGoals.Any() || Model.AwayGoals.Any()))
+{
+    <div class="card mb-4">
+        <div class="card-header fw-bold">Goal Scorers</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6 border-end" style="border-color:#1e3a5f!important;">
+                    <p class="fw-bold mb-2">@m.HomeTeam.Name</p>
+                    @if (Model.HomeGoals.Any())
+                    {
+                        @foreach (var g in Model.HomeGoals)
+                        {
+                            <div class="goal-entry mb-1">
+                                <span class="goal-minute">@g.Minute'</span>
+                                @g.ScorerName
+                                @if (g.IsOwnGoal) { <span class="text-danger">(OG)</span> }
+                                @if (g.IsPenalty) { <span class="text-warning">(P)</span> }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <small class="text-muted">No goals</small>
+                    }
+                </div>
+                <div class="col-6 ps-4">
+                    <p class="fw-bold mb-2">@m.AwayTeam.Name</p>
+                    @if (Model.AwayGoals.Any())
+                    {
+                        @foreach (var g in Model.AwayGoals)
+                        {
+                            <div class="goal-entry mb-1">
+                                <span class="goal-minute">@g.Minute'</span>
+                                @g.ScorerName
+                                @if (g.IsOwnGoal) { <span class="text-danger">(OG)</span> }
+                                @if (g.IsPenalty) { <span class="text-warning">(P)</span> }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <small class="text-muted">No goals</small>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<a asp-controller="Match" asp-action="Edit" asp-route-id="@m.Id" class="btn btn-primary">
+    Edit Result
+</a>

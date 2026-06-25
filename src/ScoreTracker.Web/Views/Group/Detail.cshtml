@@ -1,0 +1,105 @@
+@model ScoreTracker.Web.ViewModels.GroupViewModel
+@using ScoreTracker.Core.Models
+@{
+    ViewData["Title"] = $"Group {Model.Group.Name}";
+}
+
+<div class="mb-3">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm">&larr; All Groups</a>
+</div>
+
+<h2 class="fw-bold mb-4" style="color:#c9a227;">Group @Model.Group.Name</h2>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-5">
+        <div class="card">
+            <div class="card-header fw-bold">Standings</div>
+            <div class="card-body p-0">
+                <table class="table table-dark standings-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Team</th>
+                            <th class="text-center">P</th>
+                            <th class="text-center">W</th>
+                            <th class="text-center">D</th>
+                            <th class="text-center">L</th>
+                            <th class="text-center">GF</th>
+                            <th class="text-center">GA</th>
+                            <th class="text-center">GD</th>
+                            <th class="text-center">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @{int pos = 1;}
+                    @foreach (var s in Model.Standings)
+                    {
+                        <tr>
+                            <td>@pos</td>
+                            <td><strong>@s.Team.FifaCode</strong> <small class="text-muted">@s.Team.Name</small></td>
+                            <td class="text-center">@s.Played</td>
+                            <td class="text-center">@s.Won</td>
+                            <td class="text-center">@s.Drawn</td>
+                            <td class="text-center">@s.Lost</td>
+                            <td class="text-center">@s.GoalsFor</td>
+                            <td class="text-center">@s.GoalsAgainst</td>
+                            <td class="text-center">@(s.GoalDifference > 0 ? "+" : "")@s.GoalDifference</td>
+                            <td class="text-center fw-bold">@s.Points</td>
+                        </tr>
+                        pos++;
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <p class="mt-2" style="font-size:0.78rem;color:#5c7a96;">Top 2 teams qualify for the Round of 32.</p>
+    </div>
+
+    <div class="col-12 col-lg-7">
+        <div class="card">
+            <div class="card-header fw-bold">Fixtures &amp; Results</div>
+            <div class="card-body">
+                @foreach (var m in Model.Matches)
+                {
+                    <div class="match-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-end" style="width:38%;">
+                                <span class="fw-bold">@m.HomeTeam.Name</span>
+                            </div>
+                            <div class="text-center" style="width:24%;">
+                                @if (m.Status == MatchStatus.Completed)
+                                {
+                                    <a asp-controller="Match" asp-action="Detail" asp-route-id="@m.Id">
+                                        <span class="score-badge">@m.HomeScore &ndash; @m.AwayScore</span>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">@m.KickOff.ToString("d MMM HH:mm")</span>
+                                }
+                            </div>
+                            <div style="width:38%;">
+                                <span class="fw-bold">@m.AwayTeam.Name</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">@m.Venue</small>
+                            <div>
+                                @if (m.Status == MatchStatus.Completed)
+                                {
+                                    <span class="status-completed me-2">&#10003; Full Time</span>
+                                }
+                                else
+                                {
+                                    <span class="status-scheduled me-2">Scheduled</span>
+                                }
+                                <a asp-controller="Match" asp-action="Edit" asp-route-id="@m.Id"
+                                   class="btn btn-sm btn-primary" style="font-size:0.75rem;padding:1px 8px;">Edit</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
