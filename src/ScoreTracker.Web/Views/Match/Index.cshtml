@@ -6,7 +6,6 @@
 
 <h2 class="fw-bold mb-4" style="color:#e8b84b;">All Matches</h2>
 
-@{ int matchIndex = 0; }
 @foreach (var group in Model.GroupBy(m => m.Group.Name).OrderBy(g => g.Key))
 {
     <h5 class="mt-4 mb-2 fw-bold" style="color:#e8b84b;">Group @group.Key</h5>
@@ -20,7 +19,7 @@
                 <div class="text-center px-2" style="min-width:90px;">
                     @if (m.Status == MatchStatus.Completed)
                     {
-                        <a asp-controller="Match" asp-action="Detail" asp-route-id="@matchIndex">
+                        <a asp-controller="Match" asp-action="Detail" asp-route-id="@m.Id">
                             <span class="score-badge">@m.HomeScore &ndash; @m.AwayScore</span>
                         </a>
                     }
@@ -49,6 +48,5 @@
                 </div>
             </div>
         </div>
-        matchIndex++;
     }
 }
